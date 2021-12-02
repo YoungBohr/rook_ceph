@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  creationTimestamp: 2019-09-05T15:46:12Z
+  name: configdb-config
+  namespace: mongodb
+data:
+  configdb.conf: |
+    replSet=configdb
+    port=9281
+    bind_ip=0.0.0.0
+    auth=false    
+    fork=false
+    configsvr=true
+    directoryperdb=true
+    pidfilepath=/var/run/configdb.pid
+    dbpath=/data/db
+    logpath=/var/log/mongodb/configdb.log
+    logappend=true

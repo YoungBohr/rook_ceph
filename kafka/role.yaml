@@ -1,0 +1,83 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kafka
+  labels:
+    ns: kafka
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kafka-admin
+  namespace: kafka
+  labels:
+    scop: namespace-kafka
+    desc: kafka-cluster-account
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: Role
+metadata:
+  name: kafka-cluster-role
+  namespace: kafka
+  labels:
+    scop: namespace-kafka
+    desc: nsadmin
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  - events
+  - namespaces
+  - pods
+  - podtemplates
+  - replicationcontrollers
+  - secrets
+  - services
+  verbs:
+  - "*"
+- apiGroups:
+  - apps 
+  resources:
+  - daemonsets
+  - deployments
+  - replicasetes
+  - statefulsets
+  verbs:
+  - "*"
+
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: RoleBinding
+metadata:
+  name: kafka-role-binding
+  namespace: kafka
+  labels:
+    scop: namespace-kafka
+    desc: kafka-cluster-account
+subjects:
+- kind: ServiceAccount
+  name: kafka-admin
+  namespace: kafka
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: kafka-cluster-role
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: kafka-cluster-role-binding
+  namespace: kafka
+  labels:
+    scop: namespace_kafka
+    desc: kafka-cluster-account
+subjects:
+- kind: ServiceAccount
+  name: kafka-admin
+  namespace: kafka
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-common-role

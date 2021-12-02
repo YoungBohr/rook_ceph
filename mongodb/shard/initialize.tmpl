@@ -1,0 +1,74 @@
+rs.initiate(
+    {
+        _id:"shard0",
+        protocolVersion: 1,
+        members: [
+            {
+                _id: 0,
+                host: "shard0-0.shard0-service.mongodb.svc.cluster.local:9000",
+                priority: 9,
+                votes: 1,
+                tags: {
+                    "cluster": "shard0"
+                }
+            }
+        ],
+        settings: {
+            chainingAllowed : true,
+            heartbeatTimeoutSecs: 10,
+            electionTimeoutMillis: 10000,
+            catchUpTimeoutMillis: -1,
+            catchUpTakeoverDelayMillis: 30000
+        }
+    }
+)
+
+rs.initiate(
+    {
+        _id:"shard1",
+        protocolVersion: 1,
+        members: [
+            {
+                _id: 0,
+                host: "shard1-0.shard1-service.mongodb.svc.cluster.local:9001",
+                priority: 9,
+                votes: 1,
+                tags: {
+                    "cluster": "shard1"
+                }
+            }
+        ],
+        settings: {
+            chainingAllowed : true,
+            heartbeatTimeoutSecs: 10,
+            electionTimeoutMillis: 10000,
+            catchUpTimeoutMillis: -1,
+            catchUpTakeoverDelayMillis: 30000
+        }
+    }
+)
+
+rs.initiate(
+    {
+        _id:"shard2",
+        protocolVersion: 1,
+        members: [
+            {
+                _id: 0,
+                host: "shard2-0.shard2-service.mongodb.svc.cluster.local:9002",
+                priority: 9,
+                votes: 1,
+                tags: {
+                    "cluster": "shard2"
+                }
+            }
+        ],
+        settings: {
+            chainingAllowed : true,
+            heartbeatTimeoutSecs: 10,
+            electionTimeoutMillis: 10000,
+            catchUpTimeoutMillis: -1,
+            catchUpTakeoverDelayMillis: 30000
+        }
+    }
+)

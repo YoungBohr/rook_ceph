@@ -1,0 +1,42 @@
+rs.initiate(
+    {
+        _id: "configdb",
+        protocolVersion: 1,
+        members: [
+            {
+                _id: 0,
+                host: "configdb-0.configdb-service.mongodb.svc.cluster.local:9281",
+                priority: 9,
+                votes: 1,
+                tags: {
+                    "cluster": "configdb0"
+                }
+            },
+            {
+                _id: 1,
+                host: "configdb-1.configdb-service.mongodb.svc.cluster.local:9281",
+                priority: 3,
+                votes: 1,
+                tags: {
+                    "cluster": "configdb1"
+                }
+            },
+            {
+                _id: 2,
+                host: "configdb-2.configdb-service.mongodb.svc.cluster.local:9281",
+                priority: 3,
+                votes: 1,
+                tags: {
+                    "cluster": "configdb2"
+                }
+            }
+        ],
+        settings: {
+            chainingAllowed : true,
+            heartbeatTimeoutSecs: 10,
+            electionTimeoutMillis: 10000,
+            catchUpTimeoutMillis: -1,
+            catchUpTakeoverDelayMillis: 30000
+        }
+    }
+)

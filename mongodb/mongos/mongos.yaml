@@ -1,0 +1,98 @@
+---
+apiVersion: v1
+kind: Service         
+metadata:
+  name: mongos-service
+  namespace: mongodb
+  labels:
+    srv: mongos
+spec:
+  type: NodePort
+  ports:
+  - port: 9209
+    protocol: TCP
+    targetPort: 9209
+    nodePort: 30209
+  selector:
+    app: mongos
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongos
+  namespace: mongodb
+  labels:
+    app: mongos
+    cluster: mongos
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mongos
+      cluster: mongos
+  template:
+    metadata:
+      labels:
+        app: mongos
+        cluster: mongos
+    spec:
+      affinity:         
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:    
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: cluster
+                    operator: In
+                    values:
+                    - mongos
+                topologyKey: kubernetes.io/hostname           
+      serviceAccountName: mongo-admin
+      terminationGracePeriodSeconds: 21
+      containers:
+        - name: mongodb-cluster-mongos
+          image: mongo
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 0.2
+              memory: 100Mi
+            limits:
+              cpu: 0.7
+              memory: 600Mi
+          volumeMounts:
+          - name: config-volume
+            mountPath: /etc/mongos.conf
+            subPath: mongos.conf         
+          command:
+            - "mongos"
+            - "-f"
+            - "/etc/mongos.conf"
+          ports:
+            - name: mongos-port
+              containerPort: 9209   
+          #livenessProbe:
+          #  tcpSocket:
+          #    port: mongos-port
+          #  initialDelaySeconds: 60
+          #  timeoutSeconds: 90
+          #  periodSeconds: 60
+          #readinessProbe:           
+          #  exec:
+          #    command:
+          #      - mongo
+          #      - --eval
+          #      - "db.adminCommand('ping')"
+          #  initialDelaySeconds: 60
+          #  timeoutSeconds: 90
+          #  periodSeconds: 60
+      restartPolicy: Always
+      volumes:  
+      - name: config-volume
+        configMap:
+          name: mongos-config
+          items:
+          - key: mongos.conf
+            path: mongos.conf

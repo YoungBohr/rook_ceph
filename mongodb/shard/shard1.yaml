@@ -1,0 +1,109 @@
+---
+apiVersion: v1
+kind: Service         
+metadata:
+  name: shard1-service
+  namespace: mongodb
+  labels:
+    svc: shard1
+spec:
+  ports:
+  - port: 9001
+    targetPort: 9001
+  clusterIP: None     
+  selector:
+    app: shard1
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: shard1
+  namespace: mongodb
+  labels:
+    app: shard1
+    cluster: shard
+spec:
+  serviceName: shard1-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shard1
+      cluster: shard   
+  template:
+    metadata:
+      labels:
+        app: shard1
+        cluster: shard
+    spec:
+      affinity:         
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:    
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: cluster
+                    operator: In
+                    values:
+                    - shard
+                topologyKey: kubernetes.io/hostname           
+      serviceAccountName: mongo-admin
+      terminationGracePeriodSeconds: 21
+      containers:
+        - name: mongodb-cluster-shard1
+          image: mongo
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 0.5
+              memory: 200Mi
+            limits:
+              cpu: 1.5
+              memory: 2Gi
+          volumeMounts:
+          - name: config-volume
+            mountPath: /etc/shard1.conf
+            subPath: shard1.conf         
+          - name: shard1-data
+            mountPath: /data/db
+          #workingDir: /data
+          command:
+            - "mongod"
+            - "-f"
+            - "/etc/shard1.conf"
+          ports:
+            - name: shard1-port
+              containerPort: 9001
+          #livenessProbe:
+          #  tcpSocket:
+          #    port: shard1-port
+          #  initialDelaySeconds: 60
+          #  timeoutSeconds: 90
+          #  periodSeconds: 60
+          #readinessProbe:           
+          #  exec:
+          #    command:
+          #      - mongo
+          #      - --eval
+          #      - "db.adminCommand('ping')"
+          #  initialDelaySeconds: 60
+          #  timeoutSeconds: 90
+          #  periodSeconds: 60
+      restartPolicy: Always
+      volumes:  
+      - name: config-volume
+        configMap:
+          name: shard-config
+          items:
+          - key: shard1.conf
+            path: shard1.conf
+  volumeClaimTemplates:
+  - metadata:
+      name: shard1-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: rook-ceph-block 
+      resources:
+        requests:
+          storage:  100Gi

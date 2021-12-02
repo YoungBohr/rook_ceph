@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  creationTimestamp: 2019-09-05T15:46:12Z
+  name: mongos-config
+  namespace: mongodb
+data:
+  mongos.conf: |
+    port=9209
+    bind_ip=0.0.0.0  
+    fork=false
+    pidfilepath=/var/run/mongos.pid
+    logpath=/var/log/mongodb/mongos.log
+    logappend=true
+    configdb=configdb/configdb-0.configdb-service.mongodb.svc.cluster.local:9281,configdb-1.configdb-service.mongodb.svc.cluster.local:9281,configdb-2.configdb-service.mongodb.svc.cluster.local:9281

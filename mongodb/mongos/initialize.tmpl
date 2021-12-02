@@ -1,0 +1,9 @@
+sh.addShard( "shard0/shard0-0.shard0-service.mongodb.svc.cluster.local:9000" )
+sh.addShard( "shard1/shard1-0.shard1-service.mongodb.svc.cluster.local:9001" )
+sh.addShard( "shard2/shard2-0.shard2-service.mongodb.svc.cluster.local:9002" )
+use plant
+db.createUser({user:'hurui',pwd:'YkaQyTGvO8iLstS9Uao1',roles:[{role:"dbAdmin",db:"plant"},{role:"readWrite",db:"plant"}]})
+use edu
+db.createUser({user:'zyc',pwd:'26LloAmoSorcrizEzfDp',roles:[{role:"dbAdmin",db:"edu"},{role:"readWrite",db:"edu"}]})
+db.runCommand( { enablesharding :"plant"});
+db.runCommand( { enablesharding :"edu"});

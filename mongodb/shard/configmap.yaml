@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  creationTimestamp: 2019-09-05T15:46:12Z
+  name: shard-config
+  namespace: mongodb
+data:
+  shard0.conf: |
+    replSet=shard0
+    port=9000
+    bind_ip=0.0.0.0
+    auth=false
+    fork=false
+    directoryperdb=true
+    pidfilepath=/var/run/shard0.pid
+    dbpath=/data/db
+    logpath=/var/log/mongodb/shard0.log
+    logappend=true
+    shardsvr=true
+  shard1.conf: |
+    replSet=shard1
+    port=9001
+    bind_ip=0.0.0.0
+    auth=false
+    fork=false
+    directoryperdb=true
+    pidfilepath=/var/run/shard1.pid
+    dbpath=/data/db
+    logpath=/var/log/mongodb/shard1.log
+    logappend=true
+    shardsvr=true
+  shard2.conf: |
+    replSet=shard2
+    port=9002
+    bind_ip=0.0.0.0
+    auth=false
+    fork=false
+    directoryperdb=true
+    pidfilepath=/var/run/shard2.pid
+    dbpath=/data/db
+    logpath=/var/log/mongodb/shard2.log
+    logappend=true
+    shardsvr=true
